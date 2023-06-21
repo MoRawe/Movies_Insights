@@ -1,0 +1,32 @@
+import pandas as pd
+
+# Read the .csv files
+movies_df = pd.read_csv('movies.csv')
+tags_df = pd.read_csv('tags.csv')
+
+# Merge the movies and tags dataframes on movieId
+merged_df = pd.merge(movies_df, tags_df, on='movieId', how='inner')
+
+# Define positive and negative words
+positive_words = ['good', 'excellent', 'awesome', 'fantastic', 'great', 'funny', 'quirky']
+negative_words = ['bad', 'terrible', 'awful', 'horrible', 'disappointing', 'dark', 'not funny', 'sad']
+
+# Filter tags containing positive and negative words
+positive_tags = merged_df[merged_df['tag'].str.contains('|'.join(positive_words), case=False)]
+negative_tags = merged_df[merged_df['tag'].str.contains('|'.join(negative_words), case=False)]
+
+# Group by movie category and count the number of negative and positive tags
+category_negative_counts = negative_tags.groupby('genres').size()
+category_positive_counts = positive_tags.groupby('genres').size()
+
+# Find the category with the highest counts
+highest_negative_category = category_negative_counts.idxmax()
+highest_positive_category = category_positive_counts.idxmax()
+
+# Print the counts of positive and negative tags
+print("Positive Tags Count:", len(positive_tags))
+print("Negative Tags Count:", len(negative_tags))
+
+# Print the movie category with the highest number of negative and positive tags
+print("Movie Category with the Highest Negative Words:", highest_negative_category,)
+print("Movie Category with the Highest Positive Words:", highest_positive_category)
